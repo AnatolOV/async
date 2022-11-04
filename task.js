@@ -1,6 +1,7 @@
 class AlarmClock {
-  constructor(timerId = null) {
+  constructor() {
     this.alarmCollection = [];
+    this.timerId = null;
   }
 
   addClock(time, callback, id) {
@@ -13,7 +14,7 @@ class AlarmClock {
       return;
     }
 
-    this.alarmCollection.push({ time: "time", callback: callback, id: id });
+    this.alarmCollection.push({ time, callback, id });
   }
 
   removeClock(id) {
@@ -26,35 +27,30 @@ class AlarmClock {
   }
 
   getCurrentFormattedTime() {
-    this.today = new Date();
-    return this.today.toUTCString();
+    return new Date().toLocaleTimeString("ru-Ru", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   start() {
-    if (timerId != null) {
-      console.log("Интервал запущен");
-    } else if (timerId === null) {
-      timerId = this.alarmCollection.forEach(function r(item) {
-        if (item.time === item.getCurrentFormattedTime()) {
-          return this.alarmCollection.callback;
+    if (this.timerId) {
+      return;
+    }
+
+    this.timerId = setInterval(() => {
+      this.alarmCollection.forEach((clock) => {
+        if (this.getCurrentFormattedTime() === clock.time) {
+          clock.callback();
         }
       });
-    }
-    /* function checkCliock(call) {
-      if(new Date() === time)*/
-    /*В методе start должна быть следующая реализация. 
-    Вы должны проверить запущен ли уже интервал? Если интервал запущен, то в timerId должно быть какое-то значение. 
-    В таком случае ничего не нужно выполнять…Если итервал не запускался (в timerId отсутствует значение), то вы должны создать новый интервал.
-    В этом интервале, вы должны перебирать все объекты звонков (с помощью метода forEach) и каждый звонок необходимо проверить: необходимо ли ему прозвенеть? 
-    Если у звонка время (свойство time) совпадает с текущими временем (результатом метода getCurrentFormattedTime), то вы должны вызывать колбек звонка…
-    Для удобства проверки, в задании предлагается реализовать отдельную “мини” функцию checkClock, в которую будет передаваться звонок и этот звонок будет проверяться, 
-    а по необходимости вызываться. Только эту функцию советую реализовать стрелочным синтаксисом, чтобы не потерять контекст 
-    --- ??? Мне не понятно что значит запущенный интервал (значение timerId). Что значит создать новый интервал?*/
+    }, 1000);
   }
 
-  stop(timerId) {
-    if (timerId !== null) {
-      this.alarmCollection.clearInterval(id);
+  stop() {
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
     }
   }
 
